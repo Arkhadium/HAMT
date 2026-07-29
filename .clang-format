@@ -1,0 +1,440 @@
+# .clang-format — profil personnel
+# Cible testée : clang-format 22.1.8
+# Base : Microsoft, indentation 4 espaces, limite 120 colonnes, fins de ligne LF.
+#
+# Ce fichier est volontairement exhaustif : les options connues de clang-format 22.1.8
+# sont écrites explicitement. Les options ajoutées dans une future version hériteront
+# du style Microsoft grâce à BasedOnStyle.
+#
+# Limites de clang-format à connaître :
+# - Standard ne propose pas encore la valeur c++26 dans la version 22.1.8 ; Latest est
+#   utilisé pour activer la grammaire la plus récente comprise par cette version.
+# - CompactNamespaces ne réécrit pas les anciens namespaces imbriqués en namespace a::b.
+# - Le style Allman ne permet pas d’obtenir uniquement les records vides sous la forme
+#   struct Marker {}; tout en gardant les records non vides avec leur accolade à la ligne.
+# - Les espaces internes des listes { 1, 2 } imposent Cpp11BracedListStyle: Block ; dans
+#   ce mode, une très longue liste peut être compactée sur plusieurs lignes plutôt que
+#   strictement un élément par ligne.
+---
+Language:        Cpp
+BasedOnStyle:   Microsoft
+
+# --- Alignements ------------------------------------------------------------
+AlignAfterOpenBracket: true
+AccessModifierOffset: -4
+AlignArrayOfStructures: None
+AlignConsecutiveAssignments:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveBitFields:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveDeclarations:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveMacros:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveShortCaseStatements:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCaseArrows: false
+  AlignCaseColons: false
+AlignConsecutiveTableGenBreakingDAGArgColons:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveTableGenCondOperatorColons:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveTableGenDefinitionColons:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators:    false
+
+# Antislashs des macros alignés au plus près de la ligne la plus longue.
+AlignEscapedNewlines: Left
+
+# Opérateurs binaires/logiques placés avant les lignes continuées et alignés.
+AlignOperands:   Align
+
+# Pas de colonnes artificielles pour les commentaires de fin de ligne.
+AlignTrailingComments:
+  AlignPPAndNotPP: false
+  Kind:            Never
+  OverEmptyLines:  0
+
+# --- Coupures de lignes et formes courtes ----------------------------------
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowBreakBeforeNoexceptSpecifier: Never
+AllowBreakBeforeQtProperty: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseExpressionOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortCompoundRequirementOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+
+# Seules les fonctions réellement vides peuvent tenir sur une ligne.
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+
+# Les lambdas courtes peuvent rester sur une ligne.
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
+AllowShortNamespacesOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AttributeMacros:
+  - __capability
+
+# Appels : tout sur une ligne si possible, sinon un argument par ligne.
+BinPackArguments: false
+BinPackLongBracedList: false
+
+# Déclarations : tout sur une ligne si possible, sinon un paramètre par ligne.
+BinPackParameters: OnePerLine
+BitFieldColonSpacing: Both
+BracedInitializerIndentWidth: -1
+
+# --- Accolades : Microsoft / Allman personnalisé ---------------------------
+BraceWrapping:
+  AfterCaseLabel:  false
+  AfterClass:      true
+  AfterControlStatement: Always
+  AfterEnum:       true
+  AfterExternBlock: true
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterObjCDeclaration: true
+  AfterStruct:     true
+  AfterUnion:      true
+  BeforeCatch:     true
+  BeforeElse:      true
+  BeforeLambdaBody: true
+  BeforeWhile:     false
+  IndentBraces:    false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: true
+BreakAdjacentStringLiterals: true
+BreakAfterAttributes: Leave
+BreakAfterJavaFieldAnnotations: false
+
+# Le premier élément reste à côté de l’ouverture lorsque clang-format le permet.
+BreakAfterOpenBracketBracedList: false
+BreakAfterOpenBracketFunction: false
+BreakAfterOpenBracketIf: false
+BreakAfterOpenBracketLoop: false
+BreakAfterOpenBracketSwitch: false
+
+# Le type de retour peut être séparé automatiquement lorsque la signature déborde.
+BreakAfterReturnType: Automatic
+BreakArrays:     true
+
+# Les opérateurs non-affectation commencent les lignes continuées.
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeCloseBracketBracedList: false
+BreakBeforeCloseBracketFunction: false
+BreakBeforeCloseBracketIf: false
+BreakBeforeCloseBracketLoop: false
+BreakBeforeCloseBracketSwitch: false
+BreakBeforeConceptDeclarations: Always
+BreakBeforeBraces: Custom
+BreakBeforeInlineASMColon: OnlyMultiline
+BreakBeforeTemplateCloser: false
+
+# Les opérateurs ? et : commencent leurs lignes.
+BreakBeforeTernaryOperators: true
+BreakBinaryOperations: OnePerLine
+
+# Initialisateurs de constructeur : colon et virgules en tête de ligne.
+BreakConstructorInitializers: BeforeComma
+BreakFunctionDefinitionParameters: false
+
+# Héritage : premier parent sur la ligne de classe, suivants alignés dessous.
+BreakInheritanceList: AfterComma
+BreakStringLiterals: true
+BreakTemplateDeclarations: Yes
+
+# --- Largeur et indentation -------------------------------------------------
+ColumnLimit:     120
+CommentPragmas:  '^ IWYU pragma:'
+
+# Compacte les blocs imbriqués sans effectuer de réécriture sémantique vers a::b.
+CompactNamespaces: true
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+
+# Espaces dans les listes et initialisations : { 1, 2 } et Point{ 1, 2 }.
+Cpp11BracedListStyle: Block
+DerivePointerAlignment: false
+DisableFormat:   false
+
+# --- Classes, namespaces et switch ----------------------------------------
+EmptyLineAfterAccessModifier: Never
+
+# Une ligne vide avant chaque nouvelle section public/protected/private.
+EmptyLineBeforeAccessModifier: Always
+EnumTrailingComma: Leave
+ExperimentalAutoDetectBinPacking: false
+
+# Ajoute/corrige les commentaires de fermeture des namespaces longs.
+FixNamespaceComments: true
+ForEachMacros:
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+IfMacros:
+  - KJ_IF_MAYBE
+
+# --- Includes ---------------------------------------------------------------
+IncludeBlocks:   Regroup
+
+# Groupe 1 : tous les <...> ; groupe 2 : le reste, avec une ligne vide entre eux.
+IncludeCategories:
+  - Regex:           '^<'
+    Priority:        1
+    SortPriority:    1
+    CaseSensitive:   true
+  - Regex:           '.*'
+    Priority:        2
+    SortPriority:    2
+    CaseSensitive:   true
+  - Regex:           '.*'
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+IncludeIsMainRegex: '(Test)?$'
+IncludeIsMainSourceRegex: ''
+IndentAccessModifiers: false
+IndentCaseBlocks: false
+
+# Les case/default sont indentés dans le switch.
+IndentCaseLabels: true
+IndentExportBlock: true
+IndentExternBlock: AfterExternBlock
+IndentGotoLabels: true
+
+# Les directives #if/#ifdef/#endif restent en colonne zéro.
+IndentPPDirectives: None
+IndentRequiresClause: false
+IndentWidth:     4
+IndentWrappedFunctionNames: false
+
+# Ne jamais ajouter automatiquement des accolades absentes.
+InsertBraces:    false
+InsertNewlineAtEOF: false
+InsertTrailingCommas: None
+IntegerLiteralSeparator:
+  Binary:          0
+  BinaryMinDigitsInsert: 0
+  BinaryMaxDigitsRemove: 0
+  Decimal:         0
+  DecimalMinDigitsInsert: 0
+  DecimalMaxDigitsRemove: 0
+  Hex:             0
+  HexMinDigitsInsert: 0
+  HexMaxDigitsRemove: 0
+  BinaryMinDigits: 0
+  DecimalMinDigits: 0
+  HexMinDigits:    0
+JavaScriptQuotes: Leave
+JavaScriptWrapImports: true
+
+# --- Lignes vides et fins de ligne -----------------------------------------
+KeepEmptyLines:
+  AtEndOfFile:     false
+  AtStartOfBlock:  false
+  AtStartOfFile:   false
+KeepFormFeed:    false
+LambdaBodyIndentation: Signature
+
+# Force les fins de ligne LF.
+LineEnding:      LF
+MacroBlockBegin: ''
+MacroBlockEnd:   ''
+MainIncludeChar: Quote
+
+# Une seule ligne vide consécutive au maximum.
+MaxEmptyLinesToKeep: 1
+
+# Le contenu des namespaces n’est pas indenté.
+NamespaceIndentation: None
+NumericLiteralCase:
+  ExponentLetter:  Leave
+  HexDigit:        Leave
+  Prefix:          Leave
+  Suffix:          Leave
+ObjCBinPackProtocolList: Auto
+ObjCBlockIndentWidth: 2
+ObjCBreakBeforeNestedBlockParam: true
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: true
+OneLineFormatOffRegex: ''
+
+# Un initialisateur de constructeur par ligne lorsque la liste est coupée.
+PackConstructorInitializers: Never
+PenaltyBreakAssignment: 2
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakBeforeMemberAccess: 150
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakOpenParenthesis: 0
+PenaltyBreakScopeResolution: 500
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000000
+PenaltyIndentedWhitespace: 0
+PenaltyReturnTypeOnItsOwnLine: 0
+
+# --- Pointeurs, références et qualificateurs -------------------------------
+PointerAlignment: Left
+PPIndentWidth:   -1
+
+# Réordonne les qualificateurs selon QualifierOrder (à relire sur du code exotique).
+QualifierAlignment: Custom
+QualifierOrder:
+  - static
+  - inline
+  - constexpr
+  - const
+  - volatile
+  - restrict
+  - friend
+  - type
+ReferenceAlignment: Left
+
+# Conserve la mise en forme et les coupures actuelles des commentaires.
+ReflowComments:  Never
+RemoveBracesLLVM: false
+RemoveEmptyLinesInUnwrappedLines: false
+RemoveParentheses: Leave
+RemoveSemicolon: false
+
+# requires reste avec template si ça tient ; sinon il passe sur sa propre ligne.
+RequiresClausePosition: WithPreceding
+RequiresExpressionIndentation: OuterScope
+
+# Une ligne vide entre les blocs de définitions.
+SeparateDefinitionBlocks: Always
+ShortNamespaceLines: 1
+SkipMacroDefinitionBody: false
+
+# Tri automatique des includes.
+SortIncludes:
+  Enabled:         true
+  IgnoreCase:      false
+  IgnoreExtension: false
+SortJavaStaticImport: Before
+
+# Conserve l’ordre actuel des déclarations using.
+SortUsingDeclarations: Never
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterOperatorKeyword: false
+SpaceAfterTemplateKeyword: true
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeJsonColon: false
+
+# --- Espacement -------------------------------------------------------------
+SpaceBeforeParens: ControlStatements
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: true
+  AfterFunctionDefinitionName: false
+  AfterFunctionDeclarationName: false
+  AfterIfMacros:   true
+  AfterNot:        false
+  AfterOverloadedOperator: false
+  AfterPlacementOperator: true
+  AfterRequiresInClause: false
+  AfterRequiresInExpression: false
+  BeforeNonEmptyParentheses: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+
+# Fonctions, lambdas et records vides sans espace : {}.
+SpaceInEmptyBraces: Never
+
+# Un seul espace avant un commentaire de fin de ligne.
+SpacesBeforeTrailingComments: 1
+SpacesInAngles:  Never
+SpacesInContainerLiterals: true
+SpacesInLineCommentPrefix:
+  Minimum:         1
+  Maximum:         -1
+SpacesInParens:  Never
+SpacesInParensOptions:
+  ExceptDoubleParentheses: false
+  InCStyleCasts:   false
+  InConditionalStatements: false
+  InEmptyParentheses: false
+  Other:           false
+
+# Aucun espace dans values[index] et array[10].
+SpacesInSquareBrackets: false
+
+# Latest est l’équivalent disponible pour travailler avec la syntaxe C++26 connue.
+Standard:        Latest
+StatementAttributeLikeMacros:
+  - Q_EMIT
+StatementMacros:
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
+TableGenBreakInsideDAGArg: DontBreak
+
+# --- Tabulations ------------------------------------------------------------
+TabWidth:        4
+UseTab:          Never
+VerilogBreakBetweenInstancePorts: true
+WhitespaceSensitiveMacros:
+  - BOOST_PP_STRINGIZE
+  - CF_SWIFT_NAME
+  - NS_SWIFT_NAME
+  - PP_STRINGIZE
+  - STRINGIZE
+
+# Pas de lignes vides forcées au début/à la fin des namespaces.
+WrapNamespaceBodyWithEmptyLines: Never
+...
+
