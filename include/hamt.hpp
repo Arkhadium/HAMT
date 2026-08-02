@@ -57,7 +57,8 @@ Node* reallocBase(Index insertionIndex, Node* oldBase, std::size_t size)
         }
         newBase[j] = oldBase[i];
     }
-    delete oldBase;
+    if (oldBase)
+        delete[] oldBase;
     return newBase;
 }
 
@@ -125,14 +126,39 @@ private:
                     return { iterator{}, false };
                 }
 
-                auto realIndex = getRealIndex(index, m_nodesPresent);
+                if (std::popcount(m_nodesPresent) == 1)
+                {
+                    if (*m_value == val)
+                    {
+                        return { iterator{}, false };
+                    }
+                    else
+                    {
+                        Node* m_base = new Node[2];
+                        auto currentValueIdx = getTheoricalIndex(hash_type{}(m_value->first), level);
+
+                        m_nodesPresent |= Base{ 1 } << index;
+
+                        if (currentValueIdx < index)
+                        {
+                            m_base[0].m_value.emplace(std::move(*m_value));
+                            return m_base[1].insert(std::move(val), hashCode, level);
+                        }
+                        else
+                        {
+                            m_base[1].m_value.emplace(std::move(*m_value));
+                            return m_base[0].insert(std::move(val), hashCode, level);
+                        }
+                    }
+                }
+                auto realIndex = getRealIndex(m_nodesPresent, index);
                 auto& nextNode = m_base[realIndex];
 
-                return nextNode.insert(std::move(val), hashCode, level);
+                return nextNode.insert(std::move(val), hashCode, level + 1);
             }
             else
             {
-                auto realIndex = getRealIndex(index, m_nodesPresent);
+                auto realIndex = getRealIndex(m_nodesPresent, index);
                 auto& nextNode = updateBase(realIndex);
                 std::cout << val.first << " added" << std::endl;
                 nextNode.m_value.emplace(std::move(val));
@@ -141,8 +167,8 @@ private:
             }
         }
 
-        Node* m_base;
-        Base m_nodesPresent;
+        Node* m_base = nullptr;
+        Base m_nodesPresent = 0;
         std::optional<value_type> m_value;
     };
 
@@ -182,6 +208,17 @@ public:
 
         if (isPresent(index, m_nodesPresent))
         {
+            if (std::popcount(m_nodesPresent) == 1)
+            {
+                auto realIndex = getRealIndex(index, m_nodesPresent);
+                if (m_base[realIndex].m_value && val == m_base[realIndex].m_value)
+                {
+                    std::cout << val.first << " nod added" << std::endl;
+                    return { iterator{}, false };
+                }
+                else
+                    return m_base[realIndex].insert(std::move(val), hashCode, 1);
+            }
             auto realIndex = getRealIndex(index, m_nodesPresent);
             auto& nextNode = m_base[realIndex];
             m_nodesPresent |= Base{ 1 } << index;
