@@ -24,3 +24,24 @@ target_compile_options(hamt
 set_target_properties(hamt PROPERTIES
     CXX_EXTENSIONS OFF
 )
+
+find_package(GTest REQUIRED)
+
+add_executable(Tests
+    tests/emplaceTests.cpp
+    # tests/eraseTests.cpp
+    tests/findTests.cpp
+    # tests/lifetimeTests.cpp
+)
+
+target_include_directories(Tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(Tests PRIVATE
+    GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(Tests)

@@ -52,9 +52,8 @@ Node* reallocBase(Index insertionIndex, Node* oldBase, std::size_t size)
     for (std::size_t i = 0; i < size; ++i, ++j)
     {
         if (j == insertionIndex)
-        {
             ++j;
-        }
+
         newBase[j] = oldBase[i];
     }
     if (oldBase)
@@ -79,14 +78,127 @@ public:
     using hash_type = Hasher;
     using equal_type = EquilityComparator;
 
+    struct const_iterator;
+
     struct iterator
-    {}; // to be defined
+    {
+        using iterator_category = std::forward_iterator_tag;
+        using iterator_concept = std::forward_iterator_tag;
+        using value_type = Hamt::value_type;
+        using difference_type = std::ptrdiff_t;
+        using pointer = value_type*;
+        using reference = value_type&;
+
+        iterator() = default;
+
+        reference operator*() const
+        {
+            return *m_value;
+        }
+
+        pointer operator->() const
+        {
+            return m_value;
+        }
+
+        iterator& operator++()
+        {
+            m_value = m_owner->nextValue(m_value);
+            return *this;
+        }
+
+        iterator operator++(int)
+        {
+            iterator old = *this;
+            ++(*this);
+            return old;
+        }
+
+        bool operator==(const iterator& other) const
+        {
+            return m_owner == other.m_owner && m_value == other.m_value;
+        }
+
+        bool operator!=(const iterator& other) const
+        {
+            return !(*this == other);
+        }
+
+    private:
+        iterator(Hamt* owner, pointer value)
+            : m_owner(owner)
+            , m_value(value)
+        {}
+
+        Hamt* m_owner = nullptr;
+        pointer m_value = nullptr;
+
+        friend class Hamt;
+        friend struct const_iterator;
+    };
 
     struct const_iterator
-    {}; // to be defined
+    {
+        using iterator_category = std::forward_iterator_tag;
+        using iterator_concept = std::forward_iterator_tag;
+        using value_type = Hamt::value_type;
+        using difference_type = std::ptrdiff_t;
+        using pointer = const value_type*;
+        using reference = const value_type&;
+
+        const_iterator() = default;
+
+        const_iterator(const iterator& other)
+            : m_owner(other.m_owner)
+            , m_value(other.m_value)
+        {}
+
+        reference operator*() const
+        {
+            return *m_value;
+        }
+
+        pointer operator->() const
+        {
+            return m_value;
+        }
+
+        const_iterator& operator++()
+        {
+            m_value = m_owner->nextValue(m_value);
+            return *this;
+        }
+
+        const_iterator operator++(int)
+        {
+            const_iterator old = *this;
+            ++(*this);
+            return old;
+        }
+
+        bool operator==(const const_iterator& other) const
+        {
+            return m_owner == other.m_owner && m_value == other.m_value;
+        }
+
+        bool operator!=(const const_iterator& other) const
+        {
+            return !(*this == other);
+        }
+
+    private:
+        const_iterator(const Hamt* owner, pointer value)
+            : m_owner(owner)
+            , m_value(value)
+        {}
+
+        const Hamt* m_owner = nullptr;
+        pointer m_value = nullptr;
+
+        friend class Hamt;
+    };
 
 private:
-    // template <K, V, Hasher, EquilityComparator>
     class Node
     {
     public:
@@ -252,80 +364,104 @@ public:
     iterator find(const hash_compatible<key_type> auto& key_like);
     const_iterator find(const hash_compatible<key_type> auto& key_like) const;
 
-    iterator begin();
-    const_iterator begin() const;
-    const_iterator cbegin() const;
-    iterator end();
-    const_iterator end() const;
-    const_iterator cend() const;
+    iterator begin()
+    {
+        return iterator(this, nextValue(nullptr));
+    }
+
+    const_iterator begin() const
+    {
+        return cbegin();
+    }
+
+    const_iterator cbegin() const
+    {
+        return const_iterator(this, nextValue(nullptr));
+    }
+
+    iterator end()
+    {
+        return iterator(this, nullptr);
+    }
+
+    const_iterator end() const
+    {
+        return cend();
+    }
+
+    const_iterator cend() const
+    {
+        return const_iterator(this, nullptr);
+    }
 
 private:
+    static value_type* nextValueInNodes(Node* nodes, size_type count, value_type* current, bool& currentSeen)
+    {
+        for (size_type i = 0; i < count; ++i)
+        {
+            Node& node = nodes[i];
+
+            if (node.m_value)
+            {
+                value_type* value = &*node.m_value;
+                if (currentSeen)
+                    return value;
+                if (value == current)
+                    currentSeen = true;
+            }
+
+            if (node.m_base)
+            {
+                const size_type childCount = std::popcount(node.m_nodesPresent);
+                if (auto* result = nextValueInNodes(node.m_base, childCount, current, currentSeen))
+                    return result;
+            }
+        }
+        return nullptr;
+    }
+
+    static const value_type*
+    nextValueInNodes(const Node* nodes, size_type count, const value_type* current, bool& currentSeen)
+    {
+        for (size_type i = 0; i < count; ++i)
+        {
+            const Node& node = nodes[i];
+
+            if (node.m_value)
+            {
+                const value_type* value = &*node.m_value;
+                if (currentSeen)
+                    return value;
+
+                if (value == current)
+                    currentSeen = true;
+            }
+
+            if (node.m_base)
+            {
+                const size_type childCount = std::popcount(node.m_nodesPresent);
+                if (auto* result = nextValueInNodes(node.m_base, childCount, current, currentSeen))
+                    return result;
+            }
+        }
+        return nullptr;
+    }
+
+    value_type* nextValue(value_type* current)
+    {
+        bool currentSeen = (current == nullptr);
+        return nextValueInNodes(m_base, std::popcount(m_nodesPresent), current, currentSeen);
+    }
+
+    const value_type* nextValue(const value_type* current) const
+    {
+        bool currentSeen = (current == nullptr);
+        return nextValueInNodes(m_base, std::popcount(m_nodesPresent), current, currentSeen);
+    }
+
     Node* m_base;
     Base m_nodesPresent;
 };
-
-template <typename K, typename V, typename H, typename E>
-inline bool operator==(typename Hamt<K, V, H, E>::iterator lhs, typename Hamt<K, V, H, E>::iterator rhs);
-
-template <typename K, typename V, typename H, typename E>
-inline bool operator==(typename Hamt<K, V, H, E>::const_iterator lhs, typename Hamt<K, V, H, E>::const_iterator rhs);
 } // namespace hamt
 
 #endif // HAMT_HAMT_H
-
-// template <class Key, class T, class Hash = std::hash<Key>>
-// class Hamt
-// {
-// public:
-//     class Iterator
-//     {
-//     public:
-//         Iterator(Node<Key, T>* node)
-//             : m_node(node)
-//         {}
-
-//     private:
-//         Node<Key, T>* m_node;
-//     };
-
-//     std::pair<Iterator, bool> insert(const& std::pair<Key, T> value)
-//     {
-//         auto hash = std::hash<Key>{}(value.first);
-//         hash = hash % k_hash_size_root;
-//         Index index = uint32_t{ 1 } << hash;
-
-//         if (m_nodesPresent & index)
-//         {
-//             std::uint32_t bits_before = m_nodesPresent & (mask - 1);
-//             auto idx = std::popcount(bits_before);
-//             // node.insert
-//             // return
-//             return {};
-//         }
-//         else
-//         {
-//             m_nodesPresent = m_nodesPresent | index;
-//             Node* roots = new Node[m_rootSize + 1];
-//             std::uint32_t mask = 1u << index;
-//             std::uint32_t bits_before = m_nodesPresent & (mask - 1);
-//             uint32_t realIndex = std::popcount(bits_before);
-//             for (unsigned char i = 0; i < m_rootSize + 1; ++i)
-//             {
-//                 // copy n first
-//                 // add new
-//                 // copy n last
-//             }
-//             return {};
-//         }
-//     }
-
-//     Iterator erase(const Key&);
-//     Iterator find(const Key&);
-
-// private:
-//     Node* m_roots;
-//     uint32_t m_nodesPresent;
-
-//     unsigned char m_rootSize;
-//     uint32_t m_totalSize;
-// };
