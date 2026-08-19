@@ -29,9 +29,10 @@ find_package(GTest REQUIRED)
 
 add_executable(Tests
     tests/emplaceTests.cpp
-    # tests/eraseTests.cpp
+    tests/eraseTests.cpp
     tests/findTests.cpp
-    # tests/lifetimeTests.cpp
+    tests/iteratorTests.cpp
+    tests/lifetimeTests.cpp
 )
 
 target_include_directories(Tests
@@ -41,6 +42,17 @@ target_include_directories(Tests
 
 target_link_libraries(Tests PRIVATE
     GTest::gtest_main
+)
+
+# Testbench 
+
+add_executable(Testbench
+    benchmark/testBench.cpp
+)
+
+target_include_directories(Testbench
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 include(GoogleTest)
